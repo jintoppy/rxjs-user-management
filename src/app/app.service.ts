@@ -6,11 +6,23 @@ import { Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AppService {
-  users$: BehaviorSubject<string[]> = new BehaviorSubject([]);
-  private _users = [];
+  users$: BehaviorSubject<string[]> = new BehaviorSubject(
+    this.getStoredValue()
+  );
+
+  getStoredValue() {
+    let userStored = localStorage.getItem('users');
+    return userStored ? JSON.parse(userStored) : [];
+  }
+
+  saveToStorage(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
 
   addUser(user: string) {
-    this._users.push(user);
-    this.users$.next(this._users);
+    let users = this.getStoredValue();
+    users.push(user);
+    this.saveToStorage(users);
+    this.users$.next(users);
   }
 }
